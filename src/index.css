@@ -1,3 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221.2 83.2% 53.3%;
+
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 224.3 76.3% 48%;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,124 +75,97 @@ textarea {
 }
 
 body {
+  @apply bg-background text-foreground antialiased;
   font-family: 'Inter', sans-serif;
-  background-color: #e1e8eb;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  height: 254px;
-  width: 100%;
-  background-image: linear-gradient(
-      to right,
-      rgba(101, 0, 163, 0.9),
-      rgba(24, 120, 175, 0.9)
+  /* Ensure full-width layout; child sections control their own max-width */
+  display: block;
+  /* Soft modern canvas: pastel corner glows + faint vertical tint + subtle noise */
+  background-image: radial-gradient(
+      60% 40% at 20% -10%,
+      rgba(99, 102, 241, 0.18),
+      transparent 60%
     ),
-    url('https://bytegrad.com/course-assets/images/rn-image-1.png');
+    radial-gradient(
+      60% 40% at 80% 0%,
+      rgba(56, 189, 248, 0.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      80% 50% at 50% -20%,
+      rgba(168, 85, 247, 0.14),
+      transparent 60%
+    ),
+    radial-gradient(
+      70% 50% at 110% 110%,
+      rgba(99, 102, 241, 0.1),
+      transparent 60%
+    ),
+    linear-gradient(180deg, rgba(2, 6, 23, 0.045), rgba(2, 6, 23, 0) 35%),
+    radial-gradient(rgba(2, 6, 23, 0.02) 1px, transparent 1px);
+  background-size: auto, auto, auto, auto, auto, 6px 6px;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat,
+    repeat;
+  background-attachment: fixed;
 }
 
-.first-heading {
-  font-size: 65px;
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.92);
-  margin-top: 75px;
-  text-align: center;
+/* Reduced motion accessibility: strip intensive animations when user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .header-animated-gradient::before,
+  .header-animated-gradient::after {
+    animation: none !important;
+    background-size: 200% 200%; /* static gradient frame */
+  }
+  /* Disable any custom noise / shimmer animations if present */
+  .header-noise {
+    animation: none !important;
+  }
+  /* Global transition minimization */
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
-.first-heading--thin {
-  font-weight: 300;
+/* Dark mode tuning: slightly softer glows and lighter vertical tint/noise */
+.dark body {
+  background-image: radial-gradient(
+      60% 40% at 20% -10%,
+      rgba(99, 102, 241, 0.14),
+      transparent 60%
+    ),
+    radial-gradient(
+      60% 40% at 80% 0%,
+      rgba(56, 189, 248, 0.14),
+      transparent 60%
+    ),
+    radial-gradient(
+      80% 50% at 50% -20%,
+      rgba(168, 85, 247, 0.1),
+      transparent 60%
+    ),
+    radial-gradient(
+      70% 50% at 110% 110%,
+      rgba(99, 102, 241, 0.08),
+      transparent 60%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.02),
+      rgba(255, 255, 255, 0) 35%
+    ),
+    radial-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: auto, auto, auto, auto, auto, 6px 6px;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat,
+    repeat;
+  background-attachment: fixed;
 }
 
-.container {
-  width: 1050px;
-  height: 520px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 55px;
-  display: flex;
-  overflow: hidden;
-  position: relative;
-}
+/* Gradient hero + heading replaced by Tailwind utilities (Header.jsx & H1.jsx) */
 
-.textarea {
-  resize: none;
-  flex: 2;
-  font: inherit;
-  padding: 30px 40px;
-  font-size: 22px;
-}
+/* Legacy textarea and stat classes removed in favor of Tailwind utilities */
 
-.textarea::placeholder {
-  font-weight: 500;
-  color: #959c9f;
-}
-
-.textarea > textarea {
-  height: 100%;
-  width: 100%;
-}
-
-.warning {
-  position: absolute;
-  bottom: 15px;
-  left: 35px;
-  color: red;
-  font-size: 14px;
-  margin-top: 5px;
-  margin-left: 5px;
-}
-
-.stats {
-  flex: 1.3;
-  background-color: #f1f6f8;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.stat {
-  flex: 1 150px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.stat:nth-child(1),
-.stat:nth-child(2) {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.stat:nth-child(2),
-.stat:nth-child(4) {
-  border-left: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.stat__number {
-  color: #4d5457;
-  font-weight: 600;
-  font-size: 35px;
-  margin-bottom: 10px;
-}
-
-.stat__number--limit {
-  color: red;
-}
-
-.second-heading {
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: 500;
-  color: #747a7c;
-}
+/* Legacy stat typography replaced by Tailwind utilities in Stats.jsx */
 
 .footer {
   width: 1050px;
@@ -137,32 +176,54 @@ body {
 }
 
 @media (max-width: 1150px) {
-  .container {
-    width: 85vw;
-    flex-direction: column;
-  }
+  /* Container removed in favor of Tailwind Card sizing */
 
-  .first-heading {
-    font-size: 7vw;
-  }
-
-  .stat {
-    padding: 15px 10px;
-  }
-
-  .stat:nth-child(1),
-  .stat:nth-child(2),
-  .stat:nth-child(4) {
-    border: none;
-  }
-
-  .stat__number {
-    font-size: 20px;
-  }
+  /* Former responsive heading/stat rules removed */
 
   .footer {
     width: initial;
     flex-direction: column;
     align-items: center;
+  }
+}
+
+/* Header modern effects */
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.header-animated-gradient {
+  background-image: linear-gradient(
+    120deg,
+    rgba(147, 51, 234, 0.35),
+    /* purple-600 */ rgba(59, 130, 246, 0.35),
+    /* blue-500 */ rgba(14, 165, 233, 0.35) /* sky-500 */
+  );
+  background-size: 200% 200%;
+  animation: gradient-shift 18s ease infinite;
+}
+
+.header-noise {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 6px 6px;
+}
+
+/* Compact the gradient hero when on-screen keyboard is open (mobile) */
+@media (max-width: 640px) {
+  .kb-open .hero-header {
+    min-height: clamp(140px, 28vh, 300px);
+  }
+  .kb-open .hero-body {
+    min-height: clamp(140px, 28vh, 260px);
+    padding-bottom: 0.75rem !important; /* override Tailwind pb utilities */
+  }
+  .kb-open .hero-tagline {
+    display: none;
   }
 }
