@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import Textarea from './Textarea';
 import Stats from './Stats';
 import { Card, CardContent } from './components/ui/card';
-import { INSTAGRAM_MAX, FACEBOOK_MAX, TWITTER_MAX } from './constants';
+import { LIMITS } from './config/platforms';
 import { computeStats } from './lib/stats';
 
 export default function Container() {
@@ -33,11 +33,7 @@ export default function Container() {
 
   // Derive statistics from current text (debounced)
   const stats = useMemo(() => {
-    return computeStats(debouncedText, {
-      instagram: INSTAGRAM_MAX,
-      facebook: FACEBOOK_MAX,
-      twitter: TWITTER_MAX,
-    });
+    return computeStats(debouncedText, LIMITS);
   }, [debouncedText]);
 
   // Persist platform choice
@@ -92,11 +88,7 @@ export default function Container() {
             text={text}
             setText={setText}
             length={text.length}
-            limits={{
-              instagram: INSTAGRAM_MAX,
-              facebook: FACEBOOK_MAX,
-              twitter: TWITTER_MAX,
-            }}
+            limits={LIMITS}
             platform={platform}
             setPlatform={setPlatform}
           />

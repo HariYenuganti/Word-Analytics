@@ -7,6 +7,7 @@ import { Separator } from './components/ui/separator';
 import Warning from './Warning';
 import { effectiveLengthForPlatform } from './lib/stats';
 import { useToast } from './hooks/useToast';
+import { PLATFORMS } from './config/platforms';
 
 export default function Textarea({
   text,
@@ -57,12 +58,7 @@ export default function Textarea({
   const currentLimit = limits[activePlatform];
   const effectiveLen = effectiveLengthForPlatform(text, activePlatform);
   const progress = Math.min(100, (effectiveLen / currentLimit) * 100);
-  const progressColor =
-    activePlatform === 'instagram'
-      ? 'bg-pink-500'
-      : activePlatform === 'facebook'
-      ? 'bg-blue-600'
-      : 'bg-sky-500';
+  const progressColor = PLATFORMS[activePlatform]?.progressBg || 'bg-primary';
   const platformTips = {
     instagram:
       "Keep it concise and engaging. Hashtags help, but don't overdo it.",
