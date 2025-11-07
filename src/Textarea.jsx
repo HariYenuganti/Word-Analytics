@@ -5,6 +5,7 @@ import { Copy, Info } from 'lucide-react';
 import { Dialog } from './components/ui/dialog.jsx';
 import { Separator } from './components/ui/separator';
 import Warning from './Warning';
+import { effectiveLengthForPlatform } from './lib/stats';
 import { useToast } from './hooks/useToast';
 
 export default function Textarea({
@@ -23,18 +24,18 @@ export default function Textarea({
   const [warningText, setWarningText] = useState('');
 
   const handleChange = (e) => {
-    let newText = e.target.value;
-
-    // Basic validation rules. Extend here as needed.
+    const newText = e.target.value;
+    const issues = [];
     if (newText.includes('<script>')) {
-      setWarningText('No <script> tags allowed!');
-      newText = newText.replace(/<script>/gi, '');
-    } else if (newText.includes('@')) {
-      setWarningText('No @ symbol allowed!');
-      newText = newText.replace(/@/g, '');
-    } else {
-      setWarningText('');
+      issues.push('Contains <script> tag.');
     }
+    if (/https?:\/\/\S{200,}/.test(newText)) {
+      issues.push('Very long URL detected; consider shortening.');
+    }
+    if ((newText.match(/@/g) || []).length > 5) {
+      issues.push('High mention density (>5).');
+    }
+    setWarningText(issues.join(' '));
     setText(newText);
   };
 
@@ -54,7 +55,8 @@ export default function Textarea({
   }, [clearText, toast]);
 
   const currentLimit = limits[activePlatform];
-  const progress = Math.min(100, (length / currentLimit) * 100);
+  const effectiveLen = effectiveLengthForPlatform(text, activePlatform);
+  const progress = Math.min(100, (effectiveLen / currentLimit) * 100);
   const progressColor =
     activePlatform === 'instagram'
       ? 'bg-pink-500'
@@ -246,12 +248,12 @@ export default function Textarea({
           <div>
             <div className="flex justify-between text-xs mb-1">
               <span className="capitalize">
-                {activePlatform} ({currentLimit - length} left)
+                {activePlatform} ({currentLimit - effectiveLen} left)
               </span>
               <span
-                className={currentLimit - length < 0 ? 'text-destructive' : ''}
+                className={currentLimit - effectiveLen < 0 ? 'text-destructive' : ''}
               >
-                {length}/{currentLimit}
+                {effectiveLen}/{currentLimit}
               </span>
             </div>
             <div className="h-2 w-full rounded bg-muted overflow-hidden">
@@ -265,20 +267,23 @@ export default function Textarea({
           </div>
           {/* Secondary limits preview (hidden on very small screens) */}
           <div className="hidden sm:grid grid-cols-3 gap-2 text-[11px]">
-            {Object.entries(limits).map(([key, val]) => (
-              <div key={key} className="flex flex-col gap-0.5">
-                <span className="capitalize font-medium">{key}</span>
-                <span
-                  className={`truncate ${
-                    val - length < 0
-                      ? 'text-destructive'
-                      : 'text-muted-foreground'
-                  }`}
-                >
-                  {val - length} left
-                </span>
-              </div>
-            ))}
+            {Object.entries(limits).map(([key, val]) => {
+              const eff = effectiveLengthForPlatform(text, key);
+              return (
+                <div key={key} className="flex flex-col gap-0.5">
+                  <span className="capitalize font-medium">{key}</span>
+                  <span
+                    className={`truncate ${
+                      val - eff < 0
+                        ? 'text-destructive'
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    {val - eff} left
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -316,7 +321,7 @@ export default function Textarea({
       </button>
       {/* Screen reader live region for remaining characters */}
       <div className="sr-only" aria-live="polite">
-        {currentLimit - length} characters left on {activePlatform}
+        {currentLimit - effectiveLen} characters left on {activePlatform}
       </div>
       {/* Legend dialog */}
       <Dialog open={legendOpen} onOpenChange={setLegendOpen} title="Legend">
