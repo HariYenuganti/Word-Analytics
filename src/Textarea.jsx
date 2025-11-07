@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Textarea as UITextarea } from './components/ui/textarea';
 import { Button } from './components/ui/button';
-import { Copy, Info } from 'lucide-react';
+import { Copy, Info, Check } from 'lucide-react';
 import { Dialog } from './components/ui/dialog.jsx';
 import { Separator } from './components/ui/separator';
 import Warning from './Warning';
 import { effectiveLengthForPlatform } from './lib/stats';
 import { useToast } from './hooks/useToast';
 import { PLATFORMS } from './config/platforms';
+import ThreadPreview from './components/ThreadPreview';
 
 export default function Textarea({
   text,
@@ -23,29 +24,55 @@ export default function Textarea({
   const setActivePlatform = setPlatform ?? setInternalPlatform;
   const [legendOpen, setLegendOpen] = useState(false);
   const [warningText, setWarningText] = useState('');
+  const [autoSanitize, setAutoSanitize] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const val = localStorage.getItem('wa-sanitize');
+        return val == null ? true : val === 'true';
+      } catch (e) {
+        // ignore persistence errors (private mode, etc.)
+      }
+    }
+    return true;
+  });
+
+  const sanitizeText = (input) => {
+    // Remove <script>...</script> blocks (case-insensitive)
+    let out = input.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+    // Drop angle brackets to avoid accidental tag-like sequences
+    out = out.replace(/[<>]/g, '');
+    return out;
+  };
 
   const handleChange = (e) => {
-    const newText = e.target.value;
+    const raw = e.target.value;
     const issues = [];
-    if (newText.includes('<script>')) {
-      issues.push('Contains <script> tag.');
+    if (/<script\b/i.test(raw)) {
+      issues.push('Removed <script> blocks.');
     }
-    if (/https?:\/\/\S{200,}/.test(newText)) {
+    if (/https?:\/\/\S{200,}/.test(raw)) {
       issues.push('Very long URL detected; consider shortening.');
     }
-    if ((newText.match(/@/g) || []).length > 5) {
+    if ((raw.match(/@/g) || []).length > 5) {
       issues.push('High mention density (>5).');
     }
+    const next = autoSanitize ? sanitizeText(raw) : raw;
+    if (autoSanitize && next !== raw) {
+      issues.push('Sanitized special characters.');
+    }
     setWarningText(issues.join(' '));
-    setText(newText);
+    setText(next);
   };
 
   const clearText = useCallback(() => setText(''), [setText]);
   const { toast } = useToast();
+  const [copied, setCopied] = useState(false);
   const copyText = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(text);
       toast('Copied to clipboard', { variant: 'success' });
+      setCopied(true);
+      setTimeout(() => setCopied(false), 800);
     } catch (err) {
       toast('Copy failed', { variant: 'destructive' });
     }
@@ -55,27 +82,35 @@ export default function Textarea({
     toast('Cleared text', { variant: 'success' });
   }, [clearText, toast]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem('wa-sanitize', String(autoSanitize));
+    } catch (e) {
+      // ignore persistence errors
+    }
+  }, [autoSanitize]);
+
   const currentLimit = limits[activePlatform];
   const effectiveLen = effectiveLengthForPlatform(text, activePlatform);
   const progress = Math.min(100, (effectiveLen / currentLimit) * 100);
-    const platformConfig = PLATFORMS[activePlatform];
-    const progressColor = platformConfig?.progressBg || 'bg-primary';
-    const platformTips = {
-      instagram: PLATFORMS.instagram.tips,
-      facebook: PLATFORMS.facebook.tips,
-      twitter: PLATFORMS.twitter.tips,
-    };
+  const platformConfig = PLATFORMS[activePlatform];
+  const progressColor = platformConfig?.progressBg || 'bg-primary';
+  const platformTips = {
+    instagram: PLATFORMS.instagram.tips,
+    facebook: PLATFORMS.facebook.tips,
+    twitter: PLATFORMS.twitter.tips,
+  };
   const hashtagCount = (text.match(/(^|\s)#\w+/g) || []).length;
-    const hashtagGuide = {
-      instagram: PLATFORMS.instagram.hashtag.guide,
-      facebook: PLATFORMS.facebook.hashtag.guide,
-      twitter: PLATFORMS.twitter.hashtag.guide,
-    };
-    const hashtagRanges = {
-      instagram: PLATFORMS.instagram.hashtag.range,
-      facebook: PLATFORMS.facebook.hashtag.range,
-      twitter: PLATFORMS.twitter.hashtag.range,
-    };
+  const hashtagGuide = {
+    instagram: PLATFORMS.instagram.hashtag.guide,
+    facebook: PLATFORMS.facebook.hashtag.guide,
+    twitter: PLATFORMS.twitter.hashtag.guide,
+  };
+  const hashtagRanges = {
+    instagram: PLATFORMS.instagram.hashtag.range,
+    facebook: PLATFORMS.facebook.hashtag.range,
+    twitter: PLATFORMS.twitter.hashtag.range,
+  };
   const [minH, maxH] = hashtagRanges[activePlatform] || [0, 0];
   const hashStatus =
     hashtagCount < minH ? 'low' : hashtagCount > maxH ? 'high' : 'ok';
@@ -150,9 +185,9 @@ export default function Textarea({
             {text.trim() === '' ? 0 : text.trim().split(/\s+/).length} words
           </span>
         </div>
-        {/* Mobile platform switcher */}
+        {/* Mobile platform switcher (sticky) */}
         <div
-          className="flex gap-1 sm:hidden mt-1 items-center"
+          className="flex gap-1 sm:hidden mt-1 items-center sticky top-0 z-10 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-1"
           role="tablist"
           aria-label="Choose platform limits"
         >
@@ -178,10 +213,19 @@ export default function Textarea({
           >
             Legend
           </button>
+          <label className="ml-auto flex items-center gap-1 text-[11px] text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={autoSanitize}
+              onChange={(e) => setAutoSanitize(e.target.checked)}
+              className="accent-primary"
+            />
+            Auto-sanitize
+          </label>
         </div>
         {/* Desktop platform switcher */}
         <div
-          className="hidden sm:flex gap-2 mt-1 items-center"
+          className="hidden sm:flex gap-2 mt-1 items-center sticky top-0 z-10 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-1"
           role="tablist"
           aria-label="Choose platform limits"
         >
@@ -207,6 +251,15 @@ export default function Textarea({
           >
             Legend
           </button>
+          <label className="ml-auto hidden sm:inline-flex items-center gap-2 text-xs text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={autoSanitize}
+              onChange={(e) => setAutoSanitize(e.target.checked)}
+              className="accent-primary"
+            />
+            Auto-sanitize
+          </label>
           <span className="sr-only">Current platform: {activePlatform}</span>
         </div>
         {/* Platform best-practice tip */}
@@ -245,7 +298,9 @@ export default function Textarea({
                 {activePlatform} ({currentLimit - effectiveLen} left)
               </span>
               <span
-                className={currentLimit - effectiveLen < 0 ? 'text-destructive' : ''}
+                className={
+                  currentLimit - effectiveLen < 0 ? 'text-destructive' : ''
+                }
               >
                 {effectiveLen}/{currentLimit}
               </span>
@@ -253,10 +308,28 @@ export default function Textarea({
             <div className="h-2 w-full rounded bg-muted overflow-hidden">
               <div
                 className={`h-full transition-colors duration-300 ${
-                  progress > 100 ? 'bg-destructive' : progressColor
+                  progress >= 100
+                    ? 'bg-destructive'
+                    : progress >= 90
+                    ? 'bg-amber-500'
+                    : progress >= 70
+                    ? 'bg-amber-400'
+                    : progressColor
                 }`}
-                style={{ width: `${progress}%` }}
+                style={{ width: `${Math.min(progress, 100)}%` }}
               />
+            </div>
+            <div className="mt-1 flex justify-between text-[10px] font-medium text-muted-foreground/70">
+              <span>
+                {progress >= 100
+                  ? 'Limit exceeded'
+                  : progress >= 90
+                  ? 'Approaching limit'
+                  : progress >= 70
+                  ? 'High usage'
+                  : 'Comfortable'}
+              </span>
+              <span className="hidden sm:inline">⌘C copy • ⌘K clear</span>
             </div>
           </div>
           {/* Secondary limits preview (hidden on very small screens) */}
@@ -281,6 +354,12 @@ export default function Textarea({
           </div>
         </div>
       </div>
+      {/* Twitter thread preview if applicable */}
+      {activePlatform === 'twitter' && (
+        <div className="px-4">
+          <ThreadPreview text={text} />
+        </div>
+      )}
       <Separator className="hidden sm:block" />
       <div className="hidden sm:flex gap-2 px-4 py-3 bg-muted/40 backdrop-blur supports-[backdrop-filter]:bg-muted/30">
         <Button
@@ -297,7 +376,11 @@ export default function Textarea({
           onClick={copyText}
           disabled={!text}
         >
-          Copy
+          {copied ? (
+            <span className="inline-flex items-center gap-1"><Check className="h-4 w-4" /> Copied</span>
+          ) : (
+            'Copy'
+          )}
         </Button>
       </div>
       {/* Floating Copy FAB on mobile (long-press to clear) */}
@@ -311,12 +394,10 @@ export default function Textarea({
         onPointerLeave={cancelFabTimer}
         onPointerCancel={cancelFabTimer}
       >
-        <Copy className="h-5 w-5" />
+        {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
       </button>
-      {/* Screen reader live region for remaining characters */}
-      <div className="sr-only" aria-live="polite">
-        {currentLimit - effectiveLen} characters left on {activePlatform}
-      </div>
+      {/* Screen reader live region for remaining characters and thresholds */}
+      <LiveAnnouncer remaining={currentLimit - effectiveLen} platform={activePlatform} />
       {/* Legend dialog */}
       <Dialog open={legendOpen} onOpenChange={setLegendOpen} title="Legend">
         <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
@@ -345,3 +426,17 @@ export default function Textarea({
  * @property {string} text - Current text value
  * @property {(next: string) => void} setText - State setter for text
  */
+
+function LiveAnnouncer({ remaining, platform }) {
+  const lastBucket = useRef('safe');
+  const bucket = remaining < 0 ? 'over' : remaining <= 20 ? 'danger' : remaining <= 60 ? 'warning' : 'safe';
+  let announcement = `${remaining} characters left on ${platform}`;
+  if (bucket !== lastBucket.current) {
+    if (bucket === 'danger') announcement = `Approaching the limit on ${platform}: ${remaining} left`;
+    if (bucket === 'over') announcement = `Limit exceeded on ${platform} by ${Math.abs(remaining)}`;
+    lastBucket.current = bucket;
+  }
+  return (
+    <div className="sr-only" aria-live="polite">{announcement}</div>
+  );
+}

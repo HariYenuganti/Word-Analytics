@@ -54,8 +54,7 @@ function Stats({ stats, platform }) {
       bgInteractive:
         'hover:bg-white/60 dark:hover:bg-neutral-800/50 focus-visible:bg-white/60 dark:focus-visible:bg-neutral-800/50',
       num: 'text-foreground',
-      numInteractive:
-        'hover:text-foreground focus-visible:text-foreground',
+      numInteractive: 'hover:text-foreground focus-visible:text-foreground',
       ringInteractive: 'hover:ring-primary focus-visible:ring-primary',
     },
     labelClass: 'text-foreground',
@@ -65,7 +64,9 @@ function Stats({ stats, platform }) {
     <section className="md:flex-[1.3] md:min-w-[300px] bg-secondary flex flex-col md:border-l border-black/5 min-w-0 md:pl-2">
       {/* Active platform label */}
       <div className="px-3 sm:px-4 pt-3 sm:pt-4">
-        <span className={`text-[11px] uppercase tracking-wide font-medium ${theme.labelClass}`}>
+        <span
+          className={`text-[11px] uppercase tracking-wide font-medium ${theme.labelClass}`}
+        >
           Platform: {theme.label}
         </span>
       </div>
@@ -117,6 +118,20 @@ function Stat({ number, label, index, active, ringClass, tint }) {
   const topRow = index < 2;
   const rightCol = index % 2 === 1;
   const baseRing = `ring-inset ring-2 ${ringClass}`;
+  const isPlatformItem = ['Instagram', 'Facebook', 'Twitter'].includes(label);
+  const badge = isPlatformItem ? (
+    <span
+      className={`mt-1 px-2 py-0.5 rounded-full text-[10px] tracking-wide ${
+        number < 0
+          ? 'bg-destructive/10 text-destructive'
+          : number <= 20
+          ? 'bg-amber-500/10 text-amber-600'
+          : 'bg-emerald-500/10 text-emerald-600'
+      }`}
+    >
+      {number < 0 ? `${Math.abs(number)} over` : `${number} left`}
+    </span>
+  ) : null;
   return (
     <section
       className={`relative flex flex-col items-center justify-center p-4 sm:p-6 transition-colors duration-200 ease-out ${
@@ -147,6 +162,7 @@ function Stat({ number, label, index, active, ringClass, tint }) {
       >
         {label}
       </h2>
+      {badge}
     </section>
   );
 }
