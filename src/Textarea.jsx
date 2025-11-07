@@ -58,26 +58,24 @@ export default function Textarea({
   const currentLimit = limits[activePlatform];
   const effectiveLen = effectiveLengthForPlatform(text, activePlatform);
   const progress = Math.min(100, (effectiveLen / currentLimit) * 100);
-  const progressColor = PLATFORMS[activePlatform]?.progressBg || 'bg-primary';
-  const platformTips = {
-    instagram:
-      "Keep it concise and engaging. Hashtags help, but don't overdo it.",
-    facebook:
-      'Longer posts are okay. Lead with the main point; break lines for readability.',
-    twitter:
-      'Stay within 280 chars. Use threads for depth and keep one idea per tweet.',
-  };
+    const platformConfig = PLATFORMS[activePlatform];
+    const progressColor = platformConfig?.progressBg || 'bg-primary';
+    const platformTips = {
+      instagram: PLATFORMS.instagram.tips,
+      facebook: PLATFORMS.facebook.tips,
+      twitter: PLATFORMS.twitter.tips,
+    };
   const hashtagCount = (text.match(/(^|\s)#\w+/g) || []).length;
-  const hashtagGuide = {
-    instagram: '3–5 recommended',
-    facebook: '0–2 recommended',
-    twitter: '1–2 recommended',
-  };
-  const hashtagRanges = {
-    instagram: [3, 5],
-    facebook: [0, 2],
-    twitter: [1, 2],
-  };
+    const hashtagGuide = {
+      instagram: PLATFORMS.instagram.hashtag.guide,
+      facebook: PLATFORMS.facebook.hashtag.guide,
+      twitter: PLATFORMS.twitter.hashtag.guide,
+    };
+    const hashtagRanges = {
+      instagram: PLATFORMS.instagram.hashtag.range,
+      facebook: PLATFORMS.facebook.hashtag.range,
+      twitter: PLATFORMS.twitter.hashtag.range,
+    };
   const [minH, maxH] = hashtagRanges[activePlatform] || [0, 0];
   const hashStatus =
     hashtagCount < minH ? 'low' : hashtagCount > maxH ? 'high' : 'ok';
