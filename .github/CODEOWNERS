@@ -1,0 +1,3 @@
+# CODEOWNERS ensures specified users must review changes touching these paths.
+# Root pattern applies to all files.
+* @HariYenuganti
