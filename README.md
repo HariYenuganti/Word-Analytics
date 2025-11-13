@@ -1,6 +1,41 @@
+<div align="center">
+
 # Word Analytics
 
-Real‑time counts, platform limits, and easy copy with a modern React + Vite + Tailwind UI.
+Real‑time counts, platform limits, and easy copy — built with React + Vite + Tailwind.
+
+[![CI](https://github.com/HariYenuganti/Word-Analytics/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/HariYenuganti/Word-Analytics/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/HariYenuganti/Word-Analytics/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/HariYenuganti/Word-Analytics/actions/workflows/codeql.yml)
+[![release](https://img.shields.io/github/v/release/HariYenuganti/Word-Analytics?display_name=tag&sort=semver)](https://github.com/HariYenuganti/Word-Analytics/releases)
+[![semantic-release](https://img.shields.io/badge/semantic--release-enabled-brightgreen.svg?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?logo=conventionalcommits)](https://www.conventionalcommits.org)
+[![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?logo=prettier)](https://prettier.io/)
+[![License](https://img.shields.io/github/license/HariYenuganti/Word-Analytics)](LICENSE)
+
+</div>
+
+---
+
+## Table of Contents
+
+- Overview
+- Highlights
+- Quick Start
+- Usage
+- Developer Tooling
+- Project Structure
+- Accessibility
+- CI
+- Commits and Releases
+- Security Scanning (CodeQL)
+- Branch Protection (recommended)
+- Code Owners
+
+---
+
+## Overview
+
+Word Analytics helps you write platform‑ready posts faster, with accurate character counts and smart Twitter/X threading.
 
 ## Highlights
 
@@ -23,7 +58,7 @@ Real‑time counts, platform limits, and easy copy with a modern React + Vite + 
 - Dark mode and theming
   - CSS variables for surfaces and brand accents; higher-contrast tints in dark mode.
 
-## Quick start
+## Quick Start
 
 ```bash
 npm install
@@ -43,6 +78,19 @@ Run tests:
 
 ```bash
 npm test
+```
+
+## Developer Tooling
+
+```bash
+# type checking, linting, formatting
+npm run typecheck
+npm run lint
+npm run format:check
+npm run format  # fixes formatting
+
+# tests with coverage
+npm run test:coverage
 ```
 
 ## Usage
@@ -108,6 +156,43 @@ src/
 
 - Tailwind utilities are composed with CSS variables in `index.css`. Some global styles replace `@apply` for compatibility.
 - Dark mode toggles the `.dark` class on `<html>`; all tokenized colors respond.
+
+---
+
+## CI
+
+- Workflow: `.github/workflows/ci.yml` runs as separate jobs: `lint`, `typecheck`, `format`, `test` (with coverage), and `build`.
+- Artifacts: coverage and `dist/` are uploaded on every run.
+- Concurrency is enabled to cancel superseded runs on the same ref.
+
+## Commits and Releases
+
+- Conventional Commits are enforced via Husky + Commitlint.
+  - Examples: `feat: add export button`, `fix(stats): correct emoji count)`, `chore(ci): adjust workflow`.
+- Semantic Release automates versioning and GitHub Releases on pushes to `main`.
+  - Determines version bump from commit history, updates `CHANGELOG.md`, creates a tag and GitHub Release.
+  - Release assets: a zipped production build `dist-<tag>.zip` and its `SHA256` checksum are attached.
+- A manual fallback workflow `Release` is available via Actions → "Run workflow" if needed.
+
+## Security Scanning (CodeQL)
+
+- CodeQL workflow lives at `.github/workflows/codeql.yml`.
+- If you use this advanced workflow, disable Code Scanning "Default setup" in repository Settings to avoid SARIF upload conflicts.
+- Public repositories can enable Code Scanning for free (Settings → Code security and analysis).
+
+## Branch Protection (recommended)
+
+Protect `main` to accept changes only via reviewed PRs and to block force pushes:
+
+- Require a pull request before merging; approvals: 1.
+- Require review from Code Owners (see below).
+- Require status checks to pass: `CI / lint`, `CI / typecheck`, `CI / format`, `CI / test`, `CI / build`.
+- Require branches to be up to date before merging.
+- Do not allow force pushes; do not allow deletions; enforce for administrators.
+
+## Code Owners
+
+- `./.github/CODEOWNERS` lists the repository owner as the code owner for all files, so your review is required when "Require review from Code Owners" is enabled in branch protection.
 
 ---
 
