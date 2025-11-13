@@ -59,42 +59,45 @@ npm test
 
 ## Features in code
 
-- Effective length and stats: `src/lib/stats.js`
+- Effective length and stats: `src/lib/stats.ts`
   - `graphemeCount`, `effectiveLengthForPlatform`, and `computeStats` (read time + conciseness).
-- Twitter threading: `src/lib/twitterThread.js`
-- Platform config: `src/config/platforms.js`
+- Twitter threading: `src/lib/twitterThread.ts`
+- Platform config: `src/config/platforms.ts`
   - Limits, ring/progress classes, tips, hashtag guidance, and dark‑mode label contrast.
-- Text editor: `src/Textarea.jsx`
+- Centralized limits: `src/constants.ts`
+  - Single source of truth for platform character limits.
+- Text editor: `src/Textarea.tsx`
   - Overlay hashtag highlighting, templates dropdown, sanitization toggle, copy feedback, thresholds, live announcer.
-- Stats panel: `src/Stats.jsx`
+- Stats panel: `src/Stats.tsx`
   - Brand‑tinted tiles, remaining/over badges, read time/conciseness chips, skeleton shimmer.
-- Layout and debounce: `src/Container.jsx` (computing state for shimmer).
+- Layout and debounce: `src/Container.tsx` (computing state for shimmer).
 - Styles and tokens: `src/index.css`
   - CSS variables, background canvas, shimmer animation, highlight token classes.
 
 ## Configuration
 
-Platform settings live in `src/config/platforms.js`:
+Platform settings live in `src/config/platforms.ts`:
 
 - `limit`: max characters for the platform.
 - `ringClass`, `progressBg`, `tint`: visual theming hooks used by `Stats` and the progress bar.
 - `tips` and `hashtag` (`guide`, `range`): used in `Textarea`/legend.
 
-Add a new platform by extending the `PLATFORMS` map and passing `LIMITS` (derived from it) into the app (already wired in `Container.jsx`).
+Add a new platform by extending the `PLATFORMS` map and passing `LIMITS` (re-exported from `src/constants.ts`) into the app (already wired in `Container.tsx`).
 
 ## Project structure (selected)
 
 ```
 src/
-	components/ui/       # shadcn-like UI primitives
-	components/ThreadPreview.jsx
-	config/platforms.js  # platform limits + theming + guidance
-	lib/stats.js         # grapheme-safe stats and effective lengths
-	lib/twitterThread.js # thread segmentation by effective length
-	Textarea.jsx         # editor, overlay, templates, sanitization
-	Stats.jsx            # stats grid, badges, shimmer, read time
-	Container.jsx        # layout and debounce
-	index.css            # CSS vars, canvas background, shimmer
+  components/ui/          # shadcn-like UI primitives
+  components/ThreadPreview.tsx
+  config/platforms.ts     # platform limits + theming + guidance
+  constants.ts            # centralized platform character limits
+  lib/stats.ts            # grapheme-safe stats and effective lengths
+  lib/twitterThread.ts    # thread segmentation by effective length
+  Textarea.tsx            # editor, overlay, templates, sanitization
+  Stats.tsx               # stats grid, badges, shimmer, read time
+  Container.tsx           # layout and debounce
+  index.css               # CSS vars, canvas background, shimmer
 ```
 
 ## Accessibility
