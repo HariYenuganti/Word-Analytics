@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,11 +25,31 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Typecheck
+        run: npm run typecheck
+
       - name: Lint
         run: npm run lint
 
-      - name: Test
-        run: npm test
+      - name: Format check
+        run: npm run format:check
+
+      - name: Test (coverage)
+        run: npm run test:coverage
 
       - name: Build
         run: npm run build
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage/**
+
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dist
+          path: dist
