@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      VERSION: ${{ github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,16 +26,42 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test (with coverage)
+        run: npm run test:coverage
+
       - name: Build
         run: npm run build
 
       - name: Archive dist
-        run: zip -r dist.zip dist
+        run: |
+          zip -r "dist-${VERSION}.zip" dist
+          shasum -a 256 "dist-${VERSION}.zip" > "dist-${VERSION}.zip.sha256"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ env.VERSION }}
+          if-no-files-found: error
+          compression-level: 9
+          path: |
+            dist/**
+            dist-${{ env.VERSION }}.zip
+            dist-${{ env.VERSION }}.zip.sha256
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist.zip
+          name: Release ${{ env.VERSION }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: |
+            dist-${{ env.VERSION }}.zip
+            dist-${{ env.VERSION }}.zip.sha256
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
