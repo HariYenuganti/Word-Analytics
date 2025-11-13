@@ -3,7 +3,7 @@ import { splitIntoTwitterSegments } from '../lib/twitterThread';
 import { Button } from './ui/button';
 import { useToast } from '../hooks/useToast';
 
-function ThreadPreview({ text }) {
+function ThreadPreview({ text }: { text: string }) {
   const { toast } = useToast();
   const segments = splitIntoTwitterSegments(text);
   if (segments.length <= 1) return null;
@@ -18,8 +18,12 @@ function ThreadPreview({ text }) {
   return (
     <div className="mt-3 border rounded-md p-3 bg-muted/50 space-y-2">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold tracking-wide">Twitter Thread Preview</h3>
-        <Button size="sm" variant="outline" onClick={copyAll}>Copy All</Button>
+        <h3 className="text-xs font-semibold tracking-wide">
+          Twitter Thread Preview
+        </h3>
+        <Button size="sm" variant="outline" onClick={copyAll}>
+          Copy All
+        </Button>
       </div>
       <ol className="list-decimal list-inside space-y-1 text-xs max-h-40 overflow-auto">
         {segments.map((seg) => (

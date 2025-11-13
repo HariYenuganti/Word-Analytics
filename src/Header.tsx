@@ -5,7 +5,7 @@ import ThemeToggle from './ThemeToggle';
 import { Button } from './components/ui/button';
 import { Github, Info } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Dialog } from './components/ui/dialog.jsx';
+import { Dialog } from './components/ui/dialog';
 
 export default function Header() {
   const [aboutOpen, setAboutOpen] = useState(false);

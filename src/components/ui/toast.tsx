@@ -1,8 +1,12 @@
 import { cn } from '../../lib/utils';
 
-// Keep only component exports in this file to satisfy fast refresh constraints.
+export type ToastItem = {
+  id: string;
+  message: string;
+  variant?: 'success' | 'destructive' | 'default';
+};
 
-export function ToastViewport({ toasts }) {
+export function ToastViewport({ toasts }: { toasts: ToastItem[] }) {
   return (
     <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
       {toasts.map((t) => (

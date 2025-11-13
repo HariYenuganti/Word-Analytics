@@ -1,18 +1,14 @@
 import { memo, useMemo, useState } from 'react';
 import { PLATFORMS } from './config/platforms';
 import { Separator } from './components/ui/separator';
+import type { StatsResult, PlatformKey } from './lib/stats';
 
-/**
- * @param {{
- *  stats: {
- *    numberOfWords: number,
- *    numberOfCharacters: number,
- *    instagramCharactersLeft: number,
- *    facebookCharactersLeft: number,
- *  }
- * }} props
- */
-function Stats({ stats, platform }) {
+type Props = {
+  stats: StatsResult;
+  platform: PlatformKey;
+};
+
+function Stats({ stats, platform }: Props) {
   const [showTips, setShowTips] = useState(false);
   const items = useMemo(
     () => [
@@ -34,7 +30,7 @@ function Stats({ stats, platform }) {
       },
       {
         key: 'twitter',
-        number: stats.twitterCharactersLeft,
+        number: stats.twitterCharactersLeft ?? 0,
         label: 'Twitter',
       },
     ],
@@ -46,19 +42,21 @@ function Stats({ stats, platform }) {
       stats.twitterCharactersLeft,
     ]
   );
-  const theme = PLATFORMS[platform] || {
-    label: 'Platform',
-    ringClass: 'ring-primary',
-    tint: {
-      bg: 'bg-white/60 dark:bg-neutral-800/50',
-      bgInteractive:
-        'hover:bg-white/60 dark:hover:bg-neutral-800/50 focus-visible:bg-white/60 dark:focus-visible:bg-neutral-800/50',
-      num: 'text-foreground',
-      numInteractive: 'hover:text-foreground focus-visible:text-foreground',
-      ringInteractive: 'hover:ring-primary focus-visible:ring-primary',
-    },
-    labelClass: 'text-foreground',
-  };
+  const theme =
+    PLATFORMS[platform] ||
+    ({
+      label: 'Platform',
+      ringClass: 'ring-primary',
+      tint: {
+        bg: 'bg-white/60 dark:bg-neutral-800/50',
+        bgInteractive:
+          'hover:bg-white/60 dark:hover:bg-neutral-800/50 focus-visible:bg-white/60 dark:focus-visible:bg-neutral-800/50',
+        num: 'text-foreground',
+        numInteractive: 'hover:text-foreground focus-visible:text-foreground',
+        ringInteractive: 'hover:ring-primary focus-visible:ring-primary',
+      },
+      labelClass: 'text-foreground',
+    } as const);
 
   return (
     <section className="md:flex-[1.3] md:min-w-[300px] bg-secondary flex flex-col md:border-l border-black/5 min-w-0 md:pl-2">
@@ -72,7 +70,7 @@ function Stats({ stats, platform }) {
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-2 auto-rows-fr flex-1">
         {items.map((item, idx) => {
-          const isActive = platform === item.key;
+          const isActive = platform === (item.key as PlatformKey);
           return (
             <Stat
               key={item.key}
@@ -114,7 +112,22 @@ function Stats({ stats, platform }) {
   );
 }
 
-function Stat({ number, label, index, active, ringClass, tint }) {
+type StatProps = {
+  number: number;
+  label: string;
+  index: number;
+  active: boolean;
+  ringClass: string;
+  tint: {
+    bg: string;
+    bgInteractive: string;
+    num: string;
+    numInteractive: string;
+    ringInteractive: string;
+  };
+};
+
+function Stat({ number, label, index, active, ringClass, tint }: StatProps) {
   const topRow = index < 2;
   const rightCol = index % 2 === 1;
   const baseRing = `ring-inset ring-2 ${ringClass}`;

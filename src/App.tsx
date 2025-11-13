@@ -3,7 +3,7 @@ import Footer from './Footer';
 import Header from './Header';
 import { ToastProvider } from './providers/ToastProvider';
 
-function App() {
+export default function App() {
   return (
     <ToastProvider>
       <Header />
@@ -12,5 +12,3 @@ function App() {
     </ToastProvider>
   );
 }
-
-export default App;

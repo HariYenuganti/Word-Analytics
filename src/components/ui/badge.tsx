@@ -1,9 +1,15 @@
 import * as React from 'react';
 import { cn } from '../../lib/utils';
 
-const Badge = React.forwardRef(
+type Variant = 'secondary' | 'outline' | 'success' | 'destructive';
+
+export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+  variant?: Variant;
+}
+
+const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant = 'secondary', ...props }, ref) => {
-    const variants = {
+    const variants: Record<Variant, string> = {
       secondary: 'bg-secondary text-secondary-foreground',
       outline: 'border border-border text-foreground',
       success: 'bg-green-500/15 text-green-600 dark:text-green-400',

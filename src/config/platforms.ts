@@ -1,10 +1,30 @@
-import { INSTAGRAM_MAX, FACEBOOK_MAX, TWITTER_MAX } from '../constants';
+import { LIMITS_DEFAULT } from '../constants';
 
-export const PLATFORMS = {
+export type PlatformKey = 'instagram' | 'facebook' | 'twitter';
+
+export interface PlatformTheme {
+  key: PlatformKey;
+  label: string;
+  limit: number;
+  ringClass: string;
+  progressBg: string;
+  labelClass: string;
+  tint: {
+    bg: string;
+    bgInteractive: string;
+    num: string;
+    numInteractive: string;
+    ringInteractive: string;
+  };
+  tips: string;
+  hashtag: { guide: string; range: [number, number] };
+}
+
+export const PLATFORMS: Record<PlatformKey, PlatformTheme> = {
   instagram: {
     key: 'instagram',
     label: 'Instagram',
-    limit: INSTAGRAM_MAX,
+    limit: LIMITS_DEFAULT.instagram,
     ringClass: 'ring-pink-500',
     progressBg: 'bg-pink-500',
     labelClass: 'text-pink-600 dark:text-pink-400',
@@ -26,7 +46,7 @@ export const PLATFORMS = {
   facebook: {
     key: 'facebook',
     label: 'Facebook',
-    limit: FACEBOOK_MAX,
+    limit: LIMITS_DEFAULT.facebook,
     ringClass: 'ring-blue-600',
     progressBg: 'bg-blue-600',
     labelClass: 'text-blue-600 dark:text-blue-400',
@@ -48,7 +68,7 @@ export const PLATFORMS = {
   twitter: {
     key: 'twitter',
     label: 'Twitter',
-    limit: TWITTER_MAX,
+    limit: LIMITS_DEFAULT.twitter,
     ringClass: 'ring-sky-500',
     progressBg: 'bg-sky-500',
     labelClass: 'text-sky-600 dark:text-sky-400',
@@ -69,6 +89,5 @@ export const PLATFORMS = {
   },
 };
 
-export const LIMITS = Object.fromEntries(
-  Object.entries(PLATFORMS).map(([k, v]) => [k, v.limit])
-);
+// Single source of truth for limits
+export const LIMITS = LIMITS_DEFAULT;

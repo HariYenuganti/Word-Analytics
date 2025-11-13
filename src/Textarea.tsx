@@ -2,13 +2,26 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Textarea as UITextarea } from './components/ui/textarea';
 import { Button } from './components/ui/button';
 import { Copy, Info, Check } from 'lucide-react';
-import { Dialog } from './components/ui/dialog.jsx';
+import { Dialog } from './components/ui/dialog';
 import { Separator } from './components/ui/separator';
 import Warning from './Warning';
-import { effectiveLengthForPlatform } from './lib/stats';
+import {
+  effectiveLengthForPlatform,
+  type PlatformKey,
+  type Limits,
+} from './lib/stats';
 import { useToast } from './hooks/useToast';
 import { PLATFORMS } from './config/platforms';
 import ThreadPreview from './components/ThreadPreview';
+
+type Props = {
+  text: string;
+  setText: (v: string) => void;
+  length: number;
+  limits: Limits & Record<PlatformKey, number>;
+  platform?: PlatformKey;
+  setPlatform?: (p: PlatformKey) => void;
+};
 
 export default function Textarea({
   text,
@@ -17,14 +30,15 @@ export default function Textarea({
   limits,
   platform,
   setPlatform,
-}) {
+}: Props) {
   // Fallback if not provided via props
-  const [internalPlatform, setInternalPlatform] = useState('instagram');
+  const [internalPlatform, setInternalPlatform] =
+    useState<PlatformKey>('instagram');
   const activePlatform = platform ?? internalPlatform;
   const setActivePlatform = setPlatform ?? setInternalPlatform;
   const [legendOpen, setLegendOpen] = useState(false);
   const [warningText, setWarningText] = useState('');
-  const [autoSanitize, setAutoSanitize] = useState(() => {
+  const [autoSanitize, setAutoSanitize] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       try {
         const val = localStorage.getItem('wa-sanitize');
@@ -36,7 +50,7 @@ export default function Textarea({
     return true;
   });
 
-  const sanitizeText = (input) => {
+  const sanitizeText = (input: string) => {
     // Remove <script>...</script> blocks (case-insensitive)
     let out = input.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
     // Drop angle brackets to avoid accidental tag-like sequences
@@ -44,9 +58,9 @@ export default function Textarea({
     return out;
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const raw = e.target.value;
-    const issues = [];
+    const issues: string[] = [];
     if (/<script\b/i.test(raw)) {
       issues.push('Removed <script> blocks.');
     }
@@ -90,7 +104,7 @@ export default function Textarea({
     }
   }, [autoSanitize]);
 
-  const currentLimit = limits[activePlatform];
+  const currentLimit = limits[activePlatform] as number;
   const effectiveLen = effectiveLengthForPlatform(text, activePlatform);
   const progress = Math.min(100, (effectiveLen / currentLimit) * 100);
   const platformConfig = PLATFORMS[activePlatform];
@@ -99,14 +113,14 @@ export default function Textarea({
     instagram: PLATFORMS.instagram.tips,
     facebook: PLATFORMS.facebook.tips,
     twitter: PLATFORMS.twitter.tips,
-  };
+  } as const;
   const hashtagCount = (text.match(/(^|\s)#\w+/g) || []).length;
   const hashtagGuide = {
     instagram: PLATFORMS.instagram.hashtag.guide,
     facebook: PLATFORMS.facebook.hashtag.guide,
     twitter: PLATFORMS.twitter.hashtag.guide,
-  };
-  const hashtagRanges = {
+  } as const;
+  const hashtagRanges: Record<PlatformKey, [number, number]> = {
     instagram: PLATFORMS.instagram.hashtag.range,
     facebook: PLATFORMS.facebook.hashtag.range,
     twitter: PLATFORMS.twitter.hashtag.range,
@@ -121,20 +135,20 @@ export default function Textarea({
       ? 'text-amber-600'
       : 'text-destructive';
   // Refs for mobile FAB long-press
-  const pressTimerRef = useRef(null);
+  const pressTimerRef = useRef<number | null>(null);
   const longPressFiredRef = useRef(false);
   const handleFabPointerDown = () => {
     longPressFiredRef.current = false;
-    pressTimerRef.current = setTimeout(() => {
+    pressTimerRef.current = window.setTimeout(() => {
       longPressFiredRef.current = true;
       clearWithToast();
     }, 600);
   };
   const cancelFabTimer = () => {
-    if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
+    if (pressTimerRef.current) window.clearTimeout(pressTimerRef.current);
   };
   const handleFabPointerUp = () => {
-    if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
+    if (pressTimerRef.current) window.clearTimeout(pressTimerRef.current);
     if (!longPressFiredRef.current) copyText();
     longPressFiredRef.current = false;
   };
@@ -142,7 +156,7 @@ export default function Textarea({
   // Keyboard shortcuts
   // Ctrl/Cmd+K: Clear, Ctrl/Cmd+C: Copy
   useEffect(() => {
-    const listener = (e) => {
+    const listener = (e: KeyboardEvent) => {
       const meta = e.metaKey || e.ctrlKey;
       if (!meta) return;
       if (e.key.toLowerCase() === 'k') {
@@ -195,8 +209,8 @@ export default function Textarea({
             <button
               key={key}
               role="tab"
-              aria-selected={activePlatform === key}
-              onClick={() => setActivePlatform(key)}
+              aria-selected={activePlatform === (key as PlatformKey)}
+              onClick={() => setActivePlatform(key as PlatformKey)}
               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 activePlatform === key
                   ? 'bg-primary text-primary-foreground'
@@ -233,8 +247,8 @@ export default function Textarea({
             <button
               key={key}
               role="tab"
-              aria-selected={activePlatform === key}
-              onClick={() => setActivePlatform(key)}
+              aria-selected={activePlatform === (key as PlatformKey)}
+              onClick={() => setActivePlatform(key as PlatformKey)}
               className={`px-3 py-1.5 rounded-full text-xs sm:text-[13px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 ${
                 activePlatform === key
                   ? 'bg-primary text-primary-foreground'
@@ -285,7 +299,7 @@ export default function Textarea({
           value={text}
           onChange={handleChange}
           placeholder="Enter your text"
-          spellCheck="false"
+          spellCheck={false}
           className="min-h-[220px] sm:min-h-[280px] md:min-h-[420px] h-full w-full max-w-full resize-none"
           aria-label="Input text for word analytics"
           onFocus={onFocusTextarea}
@@ -335,18 +349,18 @@ export default function Textarea({
           {/* Secondary limits preview (hidden on very small screens) */}
           <div className="hidden sm:grid grid-cols-3 gap-2 text-[11px]">
             {Object.entries(limits).map(([key, val]) => {
-              const eff = effectiveLengthForPlatform(text, key);
+              const eff = effectiveLengthForPlatform(text, key as PlatformKey);
               return (
                 <div key={key} className="flex flex-col gap-0.5">
                   <span className="capitalize font-medium">{key}</span>
                   <span
                     className={`truncate ${
-                      val - eff < 0
+                      (val as number) - eff < 0
                         ? 'text-destructive'
                         : 'text-muted-foreground'
                     }`}
                   >
-                    {val - eff} left
+                    {(val as number) - eff} left
                   </span>
                 </div>
               );
@@ -377,7 +391,9 @@ export default function Textarea({
           disabled={!text}
         >
           {copied ? (
-            <span className="inline-flex items-center gap-1"><Check className="h-4 w-4" /> Copied</span>
+            <span className="inline-flex items-center gap-1">
+              <Check className="h-4 w-4" /> Copied
+            </span>
           ) : (
             'Copy'
           )}
@@ -397,7 +413,10 @@ export default function Textarea({
         {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
       </button>
       {/* Screen reader live region for remaining characters and thresholds */}
-      <LiveAnnouncer remaining={currentLimit - effectiveLen} platform={activePlatform} />
+      <LiveAnnouncer
+        remaining={currentLimit - effectiveLen}
+        platform={activePlatform}
+      />
       {/* Legend dialog */}
       <Dialog open={legendOpen} onOpenChange={setLegendOpen} title="Legend">
         <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
@@ -420,23 +439,33 @@ export default function Textarea({
   );
 }
 
-// Props contract (JSDoc)
-/**
- * @typedef {Object} TextareaProps
- * @property {string} text - Current text value
- * @property {(next: string) => void} setText - State setter for text
- */
-
-function LiveAnnouncer({ remaining, platform }) {
-  const lastBucket = useRef('safe');
-  const bucket = remaining < 0 ? 'over' : remaining <= 20 ? 'danger' : remaining <= 60 ? 'warning' : 'safe';
+function LiveAnnouncer({
+  remaining,
+  platform,
+}: {
+  remaining: number;
+  platform: PlatformKey;
+}) {
+  const lastBucket = useRef<'safe' | 'warning' | 'danger' | 'over'>('safe');
+  const bucket =
+    remaining < 0
+      ? 'over'
+      : remaining <= 20
+      ? 'danger'
+      : remaining <= 60
+      ? 'warning'
+      : 'safe';
   let announcement = `${remaining} characters left on ${platform}`;
   if (bucket !== lastBucket.current) {
-    if (bucket === 'danger') announcement = `Approaching the limit on ${platform}: ${remaining} left`;
-    if (bucket === 'over') announcement = `Limit exceeded on ${platform} by ${Math.abs(remaining)}`;
+    if (bucket === 'danger')
+      announcement = `Approaching the limit on ${platform}: ${remaining} left`;
+    if (bucket === 'over')
+      announcement = `Limit exceeded on ${platform} by ${Math.abs(remaining)}`;
     lastBucket.current = bucket;
   }
   return (
-    <div className="sr-only" aria-live="polite">{announcement}</div>
+    <div className="sr-only" aria-live="polite">
+      {announcement}
+    </div>
   );
 }

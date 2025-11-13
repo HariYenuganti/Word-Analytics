@@ -1,6 +1,19 @@
 import { cn } from '../../lib/utils';
+import type { ReactNode } from 'react';
 
-export function Dialog({ open, onOpenChange, title = 'About', children }) {
+type DialogProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title?: string;
+  children?: ReactNode;
+};
+
+export function Dialog({
+  open,
+  onOpenChange,
+  title = 'About',
+  children,
+}: DialogProps) {
   return (
     <div
       className={cn(

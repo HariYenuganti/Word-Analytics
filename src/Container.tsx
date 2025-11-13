@@ -3,10 +3,15 @@ import Textarea from './Textarea';
 import Stats from './Stats';
 import { Card, CardContent } from './components/ui/card';
 import { LIMITS } from './config/platforms';
-import { computeStats } from './lib/stats';
+import {
+  computeStats,
+  type Limits,
+  type StatsResult,
+  type PlatformKey,
+} from './lib/stats';
 
 export default function Container() {
-  const [text, setText] = useState(() => {
+  const [text, setText] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       try {
         return localStorage.getItem('wa-text') ?? '';
@@ -18,22 +23,24 @@ export default function Container() {
   });
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [platform, setPlatform] = useState(() => {
+  const [platform, setPlatform] = useState<PlatformKey>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('wa-platform') || 'instagram';
+      return (
+        (localStorage.getItem('wa-platform') as PlatformKey) || 'instagram'
+      );
     }
     return 'instagram';
   });
   // Debounce text for stats computation
-  const [debouncedText, setDebouncedText] = useState(text);
+  const [debouncedText, setDebouncedText] = useState<string>(text);
   useEffect(() => {
     const id = setTimeout(() => setDebouncedText(text), 120);
     return () => clearTimeout(id);
   }, [text]);
 
   // Derive statistics from current text (debounced)
-  const stats = useMemo(() => {
-    return computeStats(debouncedText, LIMITS);
+  const stats: StatsResult = useMemo(() => {
+    return computeStats(debouncedText, LIMITS as Limits);
   }, [debouncedText]);
 
   // Persist platform choice

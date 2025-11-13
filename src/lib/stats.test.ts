@@ -42,8 +42,11 @@ describe('computeStats', () => {
     const rawLen = Array.from(text).length; // approximate raw code point length
     const twitterEff = effectiveLengthForPlatform(text, 'twitter');
     // Should be rawLen minus both URL lengths plus 2 * 23
-    const urlMatches = text.match(/(https?:\/\/\S+|www\.[^\s]+)/g);
-    const urlsRawTotal = urlMatches.reduce((acc, u) => acc + Array.from(u).length, 0);
+    const urlMatches = text.match(/(https?:\/\/\S+|www\.[^\s]+)/g) || [];
+    const urlsRawTotal = urlMatches.reduce(
+      (acc, u) => acc + Array.from(u).length,
+      0
+    );
     const expected = rawLen - urlsRawTotal + 23 * urlMatches.length;
     expect(twitterEff).toBe(expected);
   });

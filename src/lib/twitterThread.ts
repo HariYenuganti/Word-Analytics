@@ -1,10 +1,12 @@
-// Split text into effective Twitter segments (280 char effective) preserving words
 import { effectiveLengthForPlatform } from './stats';
 
-export function splitIntoTwitterSegments(text, maxEffective = 280) {
+export function splitIntoTwitterSegments(
+  text: string,
+  maxEffective = 280
+): string[] {
   if (!text) return [];
   const words = text.split(/(\s+)/); // keep whitespace tokens
-  let segments = [];
+  const segments: string[] = [];
   let current = '';
   for (const token of words) {
     const next = current + token;
