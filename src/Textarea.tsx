@@ -5,11 +5,7 @@ import { Copy, Info, Check } from 'lucide-react';
 import { Dialog } from './components/ui/dialog';
 import { Separator } from './components/ui/separator';
 import Warning from './Warning';
-import {
-  effectiveLengthForPlatform,
-  type PlatformKey,
-  type Limits,
-} from './lib/stats';
+import { effectiveLengthForPlatform, type PlatformKey, type Limits } from './lib/stats';
 import { useToast } from './hooks/useToast';
 import { PLATFORMS } from './config/platforms';
 import ThreadPreview from './components/ThreadPreview';
@@ -23,17 +19,9 @@ type Props = {
   setPlatform?: (p: PlatformKey) => void;
 };
 
-export default function Textarea({
-  text,
-  setText,
-  length,
-  limits,
-  platform,
-  setPlatform,
-}: Props) {
+export default function Textarea({ text, setText, length, limits, platform, setPlatform }: Props) {
   // Fallback if not provided via props
-  const [internalPlatform, setInternalPlatform] =
-    useState<PlatformKey>('instagram');
+  const [internalPlatform, setInternalPlatform] = useState<PlatformKey>('instagram');
   const activePlatform = platform ?? internalPlatform;
   const setActivePlatform = setPlatform ?? setInternalPlatform;
   const [legendOpen, setLegendOpen] = useState(false);
@@ -126,14 +114,13 @@ export default function Textarea({
     twitter: PLATFORMS.twitter.hashtag.range,
   };
   const [minH, maxH] = hashtagRanges[activePlatform] || [0, 0];
-  const hashStatus =
-    hashtagCount < minH ? 'low' : hashtagCount > maxH ? 'high' : 'ok';
+  const hashStatus = hashtagCount < minH ? 'low' : hashtagCount > maxH ? 'high' : 'ok';
   const hashColor =
     hashStatus === 'ok'
       ? 'text-emerald-600'
       : hashStatus === 'low'
-      ? 'text-amber-600'
-      : 'text-destructive';
+        ? 'text-amber-600'
+        : 'text-destructive';
   // Refs for mobile FAB long-press
   const pressTimerRef = useRef<number | null>(null);
   const longPressFiredRef = useRef(false);
@@ -191,12 +178,9 @@ export default function Textarea({
     <div className="relative flex flex-col w-full md:flex-[2] flex-1 min-w-0">
       <div className="flex-1 p-4 flex flex-col gap-3">
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <h2 className="text-sm sm:text-base font-medium text-muted-foreground">
-            Your Text
-          </h2>
+          <h2 className="text-sm sm:text-base font-medium text-muted-foreground">Your Text</h2>
           <span className="text-xs sm:text-sm text-muted-foreground/70">
-            {length} chars •{' '}
-            {text.trim() === '' ? 0 : text.trim().split(/\s+/).length} words
+            {length} chars • {text.trim() === '' ? 0 : text.trim().split(/\s+/).length} words
           </span>
         </div>
         {/* Mobile platform switcher (sticky) */}
@@ -281,18 +265,15 @@ export default function Textarea({
           <Info className="h-3.5 w-3.5 mt-[2px]" />
           <span>{platformTips[activePlatform]}</span>
         </div>
-        <div
-          className="sm:hidden text-[11px] text-muted-foreground/70"
-          aria-live="polite"
-        >
+        <div className="sm:hidden text-[11px] text-muted-foreground/70" aria-live="polite">
           Hashtags: <span className="font-medium">{hashtagCount}</span> •{' '}
           {hashtagGuide[activePlatform]}
           <span className={`ml-1 font-medium ${hashColor}`}>
             {hashStatus === 'ok'
               ? 'Great spot'
               : hashStatus === 'low'
-              ? `Try ≥ ${minH}`
-              : `Consider ≤ ${maxH}`}
+                ? `Try ≥ ${minH}`
+                : `Consider ≤ ${maxH}`}
           </span>
         </div>
         <UITextarea
@@ -311,11 +292,7 @@ export default function Textarea({
               <span className="capitalize">
                 {activePlatform} ({currentLimit - effectiveLen} left)
               </span>
-              <span
-                className={
-                  currentLimit - effectiveLen < 0 ? 'text-destructive' : ''
-                }
-              >
+              <span className={currentLimit - effectiveLen < 0 ? 'text-destructive' : ''}>
                 {effectiveLen}/{currentLimit}
               </span>
             </div>
@@ -325,10 +302,10 @@ export default function Textarea({
                   progress >= 100
                     ? 'bg-destructive'
                     : progress >= 90
-                    ? 'bg-amber-500'
-                    : progress >= 70
-                    ? 'bg-amber-400'
-                    : progressColor
+                      ? 'bg-amber-500'
+                      : progress >= 70
+                        ? 'bg-amber-400'
+                        : progressColor
                 }`}
                 style={{ width: `${Math.min(progress, 100)}%` }}
               />
@@ -338,10 +315,10 @@ export default function Textarea({
                 {progress >= 100
                   ? 'Limit exceeded'
                   : progress >= 90
-                  ? 'Approaching limit'
-                  : progress >= 70
-                  ? 'High usage'
-                  : 'Comfortable'}
+                    ? 'Approaching limit'
+                    : progress >= 70
+                      ? 'High usage'
+                      : 'Comfortable'}
               </span>
               <span className="hidden sm:inline">⌘C copy • ⌘K clear</span>
             </div>
@@ -355,9 +332,7 @@ export default function Textarea({
                   <span className="capitalize font-medium">{key}</span>
                   <span
                     className={`truncate ${
-                      (val as number) - eff < 0
-                        ? 'text-destructive'
-                        : 'text-muted-foreground'
+                      (val as number) - eff < 0 ? 'text-destructive' : 'text-muted-foreground'
                     }`}
                   >
                     {(val as number) - eff} left
@@ -376,20 +351,10 @@ export default function Textarea({
       )}
       <Separator className="hidden sm:block" />
       <div className="hidden sm:flex gap-2 px-4 py-3 bg-muted/40 backdrop-blur supports-[backdrop-filter]:bg-muted/30">
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={clearText}
-          disabled={!text}
-        >
+        <Button type="button" variant="secondary" onClick={clearText} disabled={!text}>
           Clear
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={copyText}
-          disabled={!text}
-        >
+        <Button type="button" variant="outline" onClick={copyText} disabled={!text}>
           {copied ? (
             <span className="inline-flex items-center gap-1">
               <Check className="h-4 w-4" /> Copied
@@ -413,20 +378,17 @@ export default function Textarea({
         {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
       </button>
       {/* Screen reader live region for remaining characters and thresholds */}
-      <LiveAnnouncer
-        remaining={currentLimit - effectiveLen}
-        platform={activePlatform}
-      />
+      <LiveAnnouncer remaining={currentLimit - effectiveLen} platform={activePlatform} />
       {/* Legend dialog */}
       <Dialog open={legendOpen} onOpenChange={setLegendOpen} title="Legend">
         <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
           <li>
-            <span className="font-medium text-pink-600">Instagram</span>: pink
-            bar • {hashtagGuide.instagram}
+            <span className="font-medium text-pink-600">Instagram</span>: pink bar •{' '}
+            {hashtagGuide.instagram}
           </li>
           <li>
-            <span className="font-medium text-blue-600">Facebook</span>: blue
-            bar • {hashtagGuide.facebook}
+            <span className="font-medium text-blue-600">Facebook</span>: blue bar •{' '}
+            {hashtagGuide.facebook}
           </li>
           <li>
             <span className="font-medium text-sky-600">Twitter</span>: sky bar •{' '}
@@ -439,28 +401,15 @@ export default function Textarea({
   );
 }
 
-function LiveAnnouncer({
-  remaining,
-  platform,
-}: {
-  remaining: number;
-  platform: PlatformKey;
-}) {
+function LiveAnnouncer({ remaining, platform }: { remaining: number; platform: PlatformKey }) {
   const lastBucket = useRef<'safe' | 'warning' | 'danger' | 'over'>('safe');
   const bucket =
-    remaining < 0
-      ? 'over'
-      : remaining <= 20
-      ? 'danger'
-      : remaining <= 60
-      ? 'warning'
-      : 'safe';
+    remaining < 0 ? 'over' : remaining <= 20 ? 'danger' : remaining <= 60 ? 'warning' : 'safe';
   let announcement = `${remaining} characters left on ${platform}`;
   if (bucket !== lastBucket.current) {
     if (bucket === 'danger')
       announcement = `Approaching the limit on ${platform}: ${remaining} left`;
-    if (bucket === 'over')
-      announcement = `Limit exceeded on ${platform} by ${Math.abs(remaining)}`;
+    if (bucket === 'over') announcement = `Limit exceeded on ${platform} by ${Math.abs(remaining)}`;
     lastBucket.current = bucket;
   }
   return (

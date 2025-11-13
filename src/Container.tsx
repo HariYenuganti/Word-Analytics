@@ -3,12 +3,7 @@ import Textarea from './Textarea';
 import Stats from './Stats';
 import { Card, CardContent } from './components/ui/card';
 import { LIMITS } from './config/platforms';
-import {
-  computeStats,
-  type Limits,
-  type StatsResult,
-  type PlatformKey,
-} from './lib/stats';
+import { computeStats, type Limits, type StatsResult, type PlatformKey } from './lib/stats';
 
 export default function Container() {
   const [text, setText] = useState<string>(() => {
@@ -25,9 +20,7 @@ export default function Container() {
   const [mounted, setMounted] = useState(false);
   const [platform, setPlatform] = useState<PlatformKey>(() => {
     if (typeof window !== 'undefined') {
-      return (
-        (localStorage.getItem('wa-platform') as PlatformKey) || 'instagram'
-      );
+      return (localStorage.getItem('wa-platform') as PlatformKey) || 'instagram';
     }
     return 'instagram';
   });

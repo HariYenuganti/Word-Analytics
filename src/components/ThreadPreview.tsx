@@ -18,9 +18,7 @@ function ThreadPreview({ text }: { text: string }) {
   return (
     <div className="mt-3 border rounded-md p-3 bg-muted/50 space-y-2">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold tracking-wide">
-          Twitter Thread Preview
-        </h3>
+        <h3 className="text-xs font-semibold tracking-wide">Twitter Thread Preview</h3>
         <Button size="sm" variant="outline" onClick={copyAll}>
           Copy All
         </Button>

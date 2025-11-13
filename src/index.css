@@ -80,31 +80,21 @@ body {
   /* Ensure full-width layout; child sections control their own max-width */
   display: block;
   /* Soft modern canvas: pastel corner glows + faint vertical tint + subtle noise */
-  background-image: radial-gradient(
-      60% 40% at 20% -10%,
-      rgba(99, 102, 241, 0.18),
-      transparent 60%
-    ),
-    radial-gradient(
-      60% 40% at 80% 0%,
-      rgba(56, 189, 248, 0.18),
-      transparent 60%
-    ),
-    radial-gradient(
-      80% 50% at 50% -20%,
-      rgba(168, 85, 247, 0.14),
-      transparent 60%
-    ),
-    radial-gradient(
-      70% 50% at 110% 110%,
-      rgba(99, 102, 241, 0.1),
-      transparent 60%
-    ),
+  background-image:
+    radial-gradient(60% 40% at 20% -10%, rgba(99, 102, 241, 0.18), transparent 60%),
+    radial-gradient(60% 40% at 80% 0%, rgba(56, 189, 248, 0.18), transparent 60%),
+    radial-gradient(80% 50% at 50% -20%, rgba(168, 85, 247, 0.14), transparent 60%),
+    radial-gradient(70% 50% at 110% 110%, rgba(99, 102, 241, 0.1), transparent 60%),
     linear-gradient(180deg, rgba(2, 6, 23, 0.045), rgba(2, 6, 23, 0) 35%),
     radial-gradient(rgba(2, 6, 23, 0.02) 1px, transparent 1px);
-  background-size: auto, auto, auto, auto, auto, 6px 6px;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat,
-    repeat;
+  background-size:
+    auto,
+    auto,
+    auto,
+    auto,
+    auto,
+    6px 6px;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
   background-attachment: fixed;
 }
 
@@ -129,35 +119,21 @@ body {
 
 /* Dark mode tuning: slightly softer glows and lighter vertical tint/noise */
 .dark body {
-  background-image: radial-gradient(
-      60% 40% at 20% -10%,
-      rgba(99, 102, 241, 0.14),
-      transparent 60%
-    ),
-    radial-gradient(
-      60% 40% at 80% 0%,
-      rgba(56, 189, 248, 0.14),
-      transparent 60%
-    ),
-    radial-gradient(
-      80% 50% at 50% -20%,
-      rgba(168, 85, 247, 0.1),
-      transparent 60%
-    ),
-    radial-gradient(
-      70% 50% at 110% 110%,
-      rgba(99, 102, 241, 0.08),
-      transparent 60%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.02),
-      rgba(255, 255, 255, 0) 35%
-    ),
+  background-image:
+    radial-gradient(60% 40% at 20% -10%, rgba(99, 102, 241, 0.14), transparent 60%),
+    radial-gradient(60% 40% at 80% 0%, rgba(56, 189, 248, 0.14), transparent 60%),
+    radial-gradient(80% 50% at 50% -20%, rgba(168, 85, 247, 0.1), transparent 60%),
+    radial-gradient(70% 50% at 110% 110%, rgba(99, 102, 241, 0.08), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0) 35%),
     radial-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-  background-size: auto, auto, auto, auto, auto, 6px 6px;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat,
-    repeat;
+  background-size:
+    auto,
+    auto,
+    auto,
+    auto,
+    auto,
+    6px 6px;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
   background-attachment: fixed;
 }
 

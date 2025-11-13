@@ -40,7 +40,7 @@ function Stats({ stats, platform }: Props) {
       stats.instagramCharactersLeft,
       stats.facebookCharactersLeft,
       stats.twitterCharactersLeft,
-    ]
+    ],
   );
   const theme =
     PLATFORMS[platform] ||
@@ -62,9 +62,7 @@ function Stats({ stats, platform }: Props) {
     <section className="md:flex-[1.3] md:min-w-[300px] bg-secondary flex flex-col md:border-l border-black/5 min-w-0 md:pl-2">
       {/* Active platform label */}
       <div className="px-3 sm:px-4 pt-3 sm:pt-4">
-        <span
-          className={`text-[11px] uppercase tracking-wide font-medium ${theme.labelClass}`}
-        >
+        <span className={`text-[11px] uppercase tracking-wide font-medium ${theme.labelClass}`}>
           Platform: {theme.label}
         </span>
       </div>
@@ -100,9 +98,7 @@ function Stats({ stats, platform }: Props) {
         </div>
         <div
           id="mobile-tips"
-          className={`space-y-1 ${
-            showTips ? 'block' : 'hidden'
-          } sm:block transition-all`}
+          className={`space-y-1 ${showTips ? 'block' : 'hidden'} sm:block transition-all`}
         >
           <p>Tip: Keep Instagram captions concise for better engagement.</p>
           <p>Facebook allows longer posts—use the extra space wisely.</p>
@@ -138,8 +134,8 @@ function Stat({ number, label, index, active, ringClass, tint }: StatProps) {
         number < 0
           ? 'bg-destructive/10 text-destructive'
           : number <= 20
-          ? 'bg-amber-500/10 text-amber-600'
-          : 'bg-emerald-500/10 text-emerald-600'
+            ? 'bg-amber-500/10 text-amber-600'
+            : 'bg-emerald-500/10 text-emerald-600'
       }`}
     >
       {number < 0 ? `${Math.abs(number)} over` : `${number} left`}
@@ -159,11 +155,7 @@ function Stat({ number, label, index, active, ringClass, tint }: StatProps) {
     >
       <span
         className={`text-2xl sm:text-3xl font-semibold transition-colors duration-200 ease-out ${
-          number < 0
-            ? 'text-destructive'
-            : active
-            ? tint.num
-            : 'text-foreground'
+          number < 0 ? 'text-destructive' : active ? tint.num : 'text-foreground'
         } ${tint.numInteractive}`}
       >
         {number}

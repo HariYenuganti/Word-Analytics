@@ -1,9 +1,6 @@
 import { effectiveLengthForPlatform } from './stats';
 
-export function splitIntoTwitterSegments(
-  text: string,
-  maxEffective = 280
-): string[] {
+export function splitIntoTwitterSegments(text: string, maxEffective = 280): string[] {
   if (!text) return [];
   const words = text.split(/(\s+)/); // keep whitespace tokens
   const segments: string[] = [];

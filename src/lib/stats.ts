@@ -19,10 +19,7 @@ const TCO_LENGTH = 23;
 type GraphemeSegment = { segment: string };
 type IntlSegmenter = { segment: (input: string) => Iterable<GraphemeSegment> };
 type IntlWithSegmenter = typeof Intl & {
-  Segmenter?: new (
-    locale?: string,
-    options?: { granularity: 'grapheme' }
-  ) => IntlSegmenter;
+  Segmenter?: new (locale?: string, options?: { granularity: 'grapheme' }) => IntlSegmenter;
 };
 
 export function graphemeCount(str: string): number {
@@ -53,10 +50,7 @@ function twitterAdjustedLength(str: string): number {
   return adjusted;
 }
 
-export function effectiveLengthForPlatform(
-  text: string,
-  platform: PlatformKey
-): number {
+export function effectiveLengthForPlatform(text: string, platform: PlatformKey): number {
   if (platform === 'twitter') return twitterAdjustedLength(text);
   return graphemeCount(text);
 }
@@ -65,10 +59,7 @@ export function computeStats(text: string, limits: Limits): StatsResult {
   const trimmed = text.trim();
   const words = trimmed === '' ? 0 : trimmed.split(/\s+/).length;
   const length = graphemeCount(text);
-  const twLen =
-    typeof limits.twitter === 'number'
-      ? twitterAdjustedLength(text)
-      : undefined;
+  const twLen = typeof limits.twitter === 'number' ? twitterAdjustedLength(text) : undefined;
   return {
     numberOfCharacters: length,
     instagramCharactersLeft: limits.instagram - length,

@@ -43,10 +43,7 @@ describe('computeStats', () => {
     const twitterEff = effectiveLengthForPlatform(text, 'twitter');
     // Should be rawLen minus both URL lengths plus 2 * 23
     const urlMatches = text.match(/(https?:\/\/\S+|www\.[^\s]+)/g) || [];
-    const urlsRawTotal = urlMatches.reduce(
-      (acc, u) => acc + Array.from(u).length,
-      0
-    );
+    const urlsRawTotal = urlMatches.reduce((acc, u) => acc + Array.from(u).length, 0);
     const expected = rawLen - urlsRawTotal + 23 * urlMatches.length;
     expect(twitterEff).toBe(expected);
   });

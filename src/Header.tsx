@@ -59,11 +59,7 @@ export default function Header() {
                 : 'py-1.5 bg-white/65 dark:bg-neutral-900/55 border border-white/40 dark:border-white/10 shadow-sm'
             }`}
           >
-            <div
-              className={`transition-all duration-300 ${
-                scrolled ? 'scale-95' : 'scale-100'
-              }`}
-            >
+            <div className={`transition-all duration-300 ${scrolled ? 'scale-95' : 'scale-100'}`}>
               <Logo />
             </div>
             <div className="flex items-center gap-2 flex-nowrap min-w-fit">
@@ -90,9 +86,7 @@ export default function Header() {
                   className="flex items-center"
                 >
                   <Github className="h-4 w-4" />
-                  <span className="ml-2 [@media(min-width:360px)]:inline hidden">
-                    Repo
-                  </span>
+                  <span className="ml-2 [@media(min-width:360px)]:inline hidden">Repo</span>
                 </a>
               </Button>
               <ThemeToggle />
@@ -129,20 +123,15 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <Dialog
-        open={aboutOpen}
-        onOpenChange={setAboutOpen}
-        title="About Word Analytics"
-      >
+      <Dialog open={aboutOpen} onOpenChange={setAboutOpen} title="About Word Analytics">
         <p>
-          This tool gives real-time word & character counts, platform limits
-          (Instagram & Facebook), keyboard shortcuts (Ctrl/Cmd+C to copy,
-          Ctrl/Cmd+K to clear), dark mode, and modern UI built with Tailwind +
-          shadcn-style components.
+          This tool gives real-time word & character counts, platform limits (Instagram & Facebook),
+          keyboard shortcuts (Ctrl/Cmd+C to copy, Ctrl/Cmd+K to clear), dark mode, and modern UI
+          built with Tailwind + shadcn-style components.
         </p>
         <p className="mt-2">
-          Feel free to contribute or fork on GitHub. Future enhancements can
-          include multi-platform presets and export options.
+          Feel free to contribute or fork on GitHub. Future enhancements can include multi-platform
+          presets and export options.
         </p>
       </Dialog>
     </header>
